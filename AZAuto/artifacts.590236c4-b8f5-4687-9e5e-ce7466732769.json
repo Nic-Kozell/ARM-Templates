@@ -1,0 +1,119 @@
+{
+  "kind": "template",
+  "properties": {
+    "displayName": "AzureAutomation",
+    "description": "",
+    "dependsOn": [],
+    "template": {
+      "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "workspaceName": {
+          "type": "string",
+          "metadata": {
+            "description": "PA Automation"
+          }
+        },
+        "sku": {
+          "type": "string",
+          "defaultValue": "pergb2018",
+          "metadata": {
+            "description": "Set Log Analytics Pricing Tier"
+          }
+        },
+        "dataRetention": {
+          "type": "int",
+          "defaultValue": 30,
+          "minValue": 7,
+          "maxValue": 730,
+          "metadata": {
+            "description": "Log Analytics Data Retention"
+          }
+        },
+        "location": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().location]",
+          "metadata": {
+            "description": "Location in which to create the log analytics workspace."
+          }
+        },
+        "automationAccountName": {
+          "type": "string",
+          "metadata": {
+            "description": "Automation account name"
+          }
+        },
+        "automationAccountLocation": {
+          "type": "string",
+          "defaultValue": "[resourceGroup().location]",
+          "metadata": {
+            "description": "location in which to create the Automation account."
+          }
+        }
+      },
+      "resources": [
+        {
+          "type": "Microsoft.OperationalInsights/workspaces",
+          "apiVersion": "2020-08-01",
+          "name": "[parameters('workspaceName')]",
+          "location": "[parameters('location')]",
+          "properties": {
+            "sku": {
+              "name": "[parameters('sku')]"
+            },
+            "retentionInDays": "[parameters('dataRetention')]",
+            "features": {
+              "searchVersion": 1,
+              "legacy": 0
+            }
+          }
+        },
+        {
+          "type": "Microsoft.Automation/automationAccounts",
+          "apiVersion": "2020-01-13-preview",
+          "name": "[parameters('automationAccountName')]",
+          "location": "[parameters('automationAccountLocation')]",
+          "dependsOn": [
+            "[parameters('workspaceName')]"
+          ],
+          "properties": {
+            "sku": {
+              "name": "Basic"
+            }
+          }
+        },
+        {
+          "type": "Microsoft.OperationalInsights/workspaces/linkedServices",
+          "apiVersion": "2020-08-01",
+          "name": "[concat(parameters('workspaceName'), '/' , 'Automation')]",
+          "location": "[parameters('location')]",
+          "dependsOn": [
+            "[parameters('workspaceName')]",
+            "[parameters('automationAccountName')]"
+          ],
+          "properties": {
+            "resourceId": "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+          }
+        }
+      ]
+    },
+    "resourceGroup": "AzureAutomation",
+    "parameters": {
+      "workspaceName": {
+        "value": "logWorkspaceName"
+      },
+      "location": {
+        "value": "[parameters('azureAutomation_location')]"
+      },
+      "automationAccountName": {
+        "value": "[parameters('azureAutomation_automationAccountName')]"
+      },
+      "sku": {
+        "value": "pergb2018"
+      },
+      "dataRetention": {
+        "value": 30
+      }
+    }
+  }
+}
