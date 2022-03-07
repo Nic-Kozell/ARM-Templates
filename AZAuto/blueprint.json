@@ -1,0 +1,29 @@
+{
+  "properties": {
+    "description": "Prevent unintended access to Automation Accounts with access to manage identities. ",
+    "targetScope": "subscription",
+    "parameters": {
+      "azureAutomation_location": {
+        "type": "string",
+        "metadata": {
+          "displayName": "location (AzureAutomation)",
+          "description": "Location in which to create the log analytics workspace."
+        },
+        "allowedValues": []
+      },
+      "azureAutomation_automationAccountName": {
+        "type": "string",
+        "metadata": {
+          "displayName": "automationAccountName (AzureAutomation)",
+          "description": "Automation account name"
+        },
+        "allowedValues": []
+      }
+    },
+    "resourceGroups": {
+      "AzureAutomation": {
+        "dependsOn": []
+      }
+    }
+  }
+}
